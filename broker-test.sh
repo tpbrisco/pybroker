@@ -3,6 +3,7 @@ set -e
 
 # set broker URL - default to cfdev environment
 URL=${BROKER_URL:-"http://broker.dev.cfdev.sh"}
+echo "Using broker URL ${URL}"
 
 # fetch the catalog that the market place would bind to
 echo Discovering service and plans
