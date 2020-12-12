@@ -2,4 +2,5 @@ applications:
 - name: broker
   memory: 32M
   instances: 1
-  buildpack: python_buildpack
+  buildpacks:
+  - python_buildpack
