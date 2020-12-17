@@ -6,13 +6,12 @@ CFLAGS=${CURL_FLAGS:-''}
 
 # set broker URL - default to cfdev environment
 URL=${BROKER_URL:-"http://broker.dev.cfdev.sh"}
-
-if [[ "${BROKER_URL}" =~ '^http.*' ]] ;
+if [[ ${URL} =~ ^http.* ]];
 then
     echo "Using broker URL ${URL}"
 else
     echo BROKER_URL needs to indicate http or https
-    echo ${BROKER_URL} does not
+    echo ${URL} does not
     exit 1
 fi
 
