@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: pybroker-svc
+  labels:
+    app: pybroker
+spec:
+  selector:
+    app: pybroker-pod
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080

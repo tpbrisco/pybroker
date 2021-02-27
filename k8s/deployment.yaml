@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pybroker-deployment
+  labels:
+    app: pybroker
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: pybroker-pod
+  template:
+    metadata:
+      labels:
+        app: pybroker-pod
+    spec:
+      containers:
+        - name: pybroker
+          image: tpbrisco/pybroker
+      imagePullSecrets:
+      - name: dockerhub
