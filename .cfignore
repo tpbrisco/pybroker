@@ -7,4 +7,4 @@ hide-broker.sh
 vendor.sh
 Dockerfile
 README.md
-CFK8_BUG.txt
+k8s
