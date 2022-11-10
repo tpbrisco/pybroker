@@ -159,12 +159,14 @@ instances = {
 
 
 def find_instance(id):
+    app.config['logger'].debug("find_instance: {}".format(id))
     if id in instances.keys():
         return instances[id]
     return None
 
 
 def delete_instance(id):
+    app.config['logger'].debug("service instances: {}".format(json.dumps(instances, indent=2)))
     if id in instances.keys():
         del instances[id]
     return {}
@@ -193,25 +195,25 @@ def catalog():
            methods=['PUT', 'DELETE', 'PATCH'])
 def service_instances(instance_id):
     app.config['logger'].info("service_instances called")
-    config = request.get_json()
     app.config['logger'].debug("instance: %s" % (instance_id))
-    app.config['logger'].debug("config: %s" % (json.dumps(config, indent=2)))
-
-    # check we're called correctly - superfluous, really
-    if config and not (
-            (config['service_id'] == dream_service['id']) and
-            ((config['plan_id'] == big_dreams['id']) or
-             (config['plan_id'] == small_dreams['id']))):
-        app.config['logger'].debug("service mismatch")
-        err_str = 'service (%s) or plan (%s) not me' % \
-            (config['service_id'], config['plan_id'])
-        err = {'description': err_str}
-        return make_response(json.dumps(err, indent=2), 404, content_headers)
 
     # validated request is for this broker
     app.config['logger'].debug("HTTP method {}".format(request.method))
     if request.method == 'PUT' or request.method == 'PATCH':
         app.config['logger'].info("Add/Update instance %s" % (instance_id))
+        config = request.get_json()
+        app.config['logger'].debug("config: %s" % (json.dumps(config, indent=2)))
+        # check parameters are right for PUT/PATCH
+        if config and not (
+                (config['service_id'] == dream_service['id']) and
+                ((config['plan_id'] == big_dreams['id']) or
+                 (config['plan_id'] == small_dreams['id']))):
+            app.config['logger'].debug("service mismatch")
+            err_str = 'service (%s) or plan (%s) not me' % \
+                (config['service_id'], config['plan_id'])
+            err = {'description': err_str}
+            return make_response(json.dumps(err, indent=2), 404, content_headers)
+
         if request.method == 'PUT':
             svc = service_template.copy()
             svc['id'] = instance_id
@@ -246,11 +248,9 @@ def service_instances(instance_id):
 @app.route('/v2/service_instances/<instance_id>/service_bindings/<binding_id>',
            methods=['GET', 'PUT', 'DELETE', 'PATCH'])
 def service_bindings(instance_id, binding_id):
-    app.config['logger'].info("service_bindings called")
+    app.config['logger'].info("service_bindings called, method={}".format(request.method))
     app.config['logger'].debug("instance %s binding %s" %
                                (instance_id, binding_id))
-    config = request.get_json()
-    app.config['logger'].debug("config: %s" % (json.dumps(config, indent=2)))
     x = find_instance(instance_id)
     app.config['logger'].debug("found instance %s" % (json.dumps(x, indent=2)))
     if x is None:
@@ -266,6 +266,7 @@ def service_bindings(instance_id, binding_id):
                      (binding_id)}
             return make_response(json.dumps(rcode), 404, content_headers)
     if request.method == 'PUT' or request.method == 'PATCH':
+        config = request.get_json()
         x['bindings'][binding_id] = config
         if request.method == 'PUT':
             # when creating a new service, generate credentials to use it
