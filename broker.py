@@ -83,13 +83,22 @@ app.config['logger'].addHandler(logging.StreamHandler())
 
 # verify version number
 def api_version_is_valid(api_version):
+    """Validate API version is at least that of those declared.
+
+    Usage examples:
+    >>> api_version_is_valid("2.12")
+    True
+    >>> api_version_is_valid("2.10")
+    True
+    >>> api_version_is_valid("2.8")
+    False
+    """
     version_data = api_version.split('.')
-    result = True
-    if (float(version_data[0]) < X_BROKER_API_MAJOR_VERSION or
+    if (float(version_data[0]) != X_BROKER_API_MAJOR_VERSION or
         (float(version_data[0]) == X_BROKER_API_MAJOR_VERSION and
          float(version_data[1]) < X_BROKER_API_MINOR_VERSION)):
-        result = False
-    return result
+        return False
+    return True
 
 
 # wrap endpoints with version checking
@@ -178,10 +187,12 @@ def delete_instance(id):
 
 
 # list catalog
-@app.route('/v2/catalog')
+@app.route('/catalog')
 @requires_api_version
 @requires_auth
 def catalog():
+    """Create and return catalog item for open service broker"""
+
     app.config['logger'].info("catalog called")
     dream_service['dashboard_client']['redirect_uri'] = \
         request.url_root + url_for('service_console')[1:]
