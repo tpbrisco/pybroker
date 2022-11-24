@@ -3,6 +3,8 @@ pybroker - a trivial but complete broker for Cloud Foundry in python/Flask
 
 ## Introduction
 
+See the "cf-broker" project for an improved/updated version of this.
+
 "pybroker" is a complete but minimal cloud foundry broker written in
 python using the Flask framework.
 
